@@ -20,12 +20,12 @@
         //make the button do something
         $('#aric_copyReport').off('click');
         $('#aric_copyReport').click(function () {
-            parseScoutInfo();
+            parseScoutInfo().toString();
         });
     });
 
     function parseScoutInfo() {
-        var scoutReport = {
+        let scoutReport = {
             reportSubject: document.getElementById("reportSubject").innerText,
             reportDate: document.getElementById("reportDate").innerText,
             success: { 
@@ -40,27 +40,63 @@
                 continent: document.getElementById("reportattackercont").innerText,
                 coords: document.getElementById("reportattackercoords").innerText,
             },
+            defender: {
+                name: document.getElementById("reportdefenderplayer").innerText,
+                city: document.getElementById("reportdefendercity").innerText,
+                continent: document.getElementById("reportdefendercont").innerText,
+                coords: document.getElementById("reportdefendercoords").innerText,
+            },
             resources: {
                 wood: document.getElementById("spiedWoodnum").innerText,
                 stone: document.getElementById("spiedStonenum").innerText,
                 iron: document.getElementById("spiedIronnum").innerText,
                 food: document.getElementById("spiedFoodnum").innerText
-            }
-            // buildings: {
+            },
+            buildings: parseBuildings(),
+            toString: function () {
+                var builds = [];
+                for (let i = 0; i < simpleBuildingNames.length; i++) {
+                    builds[i] = [simpleBuildingNames[i], this.buildings[i]]
+                }
+                let csvContent = "data:text/csv;charset=utf-8,";
                 
-            // }
+                let rows = [
+                    ["Subject", this.reportSubject],
+                    ["Date", this.reportDate],
+                    ["Success", this.success.units, this.success.resources, this.success.buildings, this.success.fortifications],
+                    ["Attacker", this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords],
+                    ["Defender", this.defender.name, this.defender.city, this.defender.continent, this.defender.coords],
+                    ["Resources", this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food],
+                    ["Buildings"],
+                ];
+
+                builds.forEach(function (building) {
+                    rows.push(building);
+                });
+
+                rows.forEach(function(rowArray) {
+                    let row = rowArray.join(",");
+                    csvContent += row + "\r\n";
+                });
+
+                //console.log(csvContent);
+                var encodedUri = encodeURI(csvContent);
+                window.open(encodedUri);
+                //navigator.clipboard.writeText(csvContent);
+            }
         }
-        //alert(scoutReport.attacker.name);
+        return scoutReport;
     }
 
-    var buildingNames = ["Forester's Hut","Cabin","Storehouse","Stone Mine","Sentinel Post","Hideaway","Farm Estate","Guardhouse","Ranger Post","Barracks","Iron Mine","Training Arena","Forum","Villa","Snag Barricade","Sawmill","Stable","Triari Post","Mason's Hut","Sorcerer's Tower","Equine Barricade","Grain Mill","Academy","Castle","Priestess Post","Rune Barricade","Temple","Smelter","Blacksmith","Ballista Post","Veiled Barricade","Port","Shipyard", "City Wall"];
+    var buildingNames = ["Forester\'s Hut","Cabin","Storehouse","Stone Mine","Sentinel Post","Hideaway","Farm Estate","Guard House","Ranger Post","Barracks","Iron Mine","Training Arena","Forum","Villa","Snag Barricade","Sawmill","Stable","Triari Post","Mason\'s Hut","Sorcerer\’s Tower","Equine Barricade","Grain Mill","Academy","Castle","Priestess Post","Rune Barricade","Temple","Smelter","Blacksmith","Ballista Post","Veiled Barricade","Port","Shipyard", "City Wall", "Basilica"];
+
+    var simpleBuildingNames = ["foresterHut", "cabin", "storehouse", "stoneMine", "sentinelPost", "hideaway", "farmEstate", "guardhouse", "rangerPost", "barracks", "ironMine", "trainingArena", "forum", "villa", "snagBarricade", "sawmill", "stable", "triariPost", "masonHut", "sorcererTower", "equineBarricade", "grainMill", "academy", "castle", "priestessPost", "runeBarricade", "temple", "smelter", "blacksmith", "ballistaPost", "veiledBarricade", "port", "shipyard"];
 
     // Parse Scout building rebort
     function parseBuildings() {
         let buildings = [];
     
         let spyTable = document.getElementById("buildSpiedtable").getElementsByTagName("tbody");
-        let spied = [];
 
         for (let entry of spyTable) {
             let tags = entry.getElementsByTagName("td");
@@ -72,13 +108,7 @@
             }
         }
 
-        for (var i = 4; i < spyBody.length - 4; i += 3) {
-            if (spyTd[i].title.length > 1) {
-                spied.push([spyTd[i].title, spyTd[i + 1].textContent]);
-            }
-        }
-
-       return spied;
+       return buildings;
     }
 
     
