@@ -47,27 +47,29 @@
                 coords: document.getElementById("reportdefendercoords").innerText,
             },
             resources: {
-                wood: document.getElementById("spiedWoodnum").innerText,
-                stone: document.getElementById("spiedStonenum").innerText,
-                iron: document.getElementById("spiedIronnum").innerText,
-                food: document.getElementById("spiedFoodnum").innerText
+                wood: document.getElementById("spiedWoodnum").innerText.replace(/,/g, ""),
+                stone: document.getElementById("spiedStonenum").innerText.replace(/,/g, ""),
+                iron: document.getElementById("spiedIronnum").innerText.replace(/,/g, ""),
+                food: document.getElementById("spiedFoodnum").innerText.replace(/,/g, "")
             },
             buildings: parseBuildings(),
             toString: function () {
                 var builds = [];
                 for (let i = 0; i < simpleBuildingNames.length; i++) {
-                    builds[i] = [simpleBuildingNames[i], this.buildings[i]]
+                    builds[i] = [simpleBuildingNames[i], this.buildings[i],"","",""]
                 }
-                let csvContent = "data:text/csv;charset=utf-8,";
+                let csvContent = "";//"data:text/csv;charset=utf-8,";
                 
                 let rows = [
-                    ["Subject", this.reportSubject],
-                    ["Date", this.reportDate],
-                    ["Success", this.success.units, this.success.resources, this.success.buildings, this.success.fortifications],
-                    ["Attacker", this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords],
-                    ["Defender", this.defender.name, this.defender.city, this.defender.continent, this.defender.coords],
-                    ["Resources", this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food],
-                    ["Buildings"],
+                    ["subject", this.reportSubject,"","",""],
+                    ["date", this.reportDate,"","",""],
+                    ["success", "units", "resources", "buildings", "fortifications"],
+                    ["success", this.success.units, this.success.resources, this.success.buildings, this.success.fortifications],
+                    ["attacker", this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords],
+                    ["defender", this.defender.name, this.defender.city, this.defender.continent, this.defender.coords],
+                    ["resources", "wood", "stone", "iron", "food"],
+                    ["resources", this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food],
+                    ["buildings", "total level","","",""]
                 ];
 
                 builds.forEach(function (building) {
@@ -80,9 +82,9 @@
                 });
 
                 //console.log(csvContent);
-                var encodedUri = encodeURI(csvContent);
-                window.open(encodedUri);
-                //navigator.clipboard.writeText(csvContent);
+                //var encodedUri = encodeURI(csvContent);
+                //window.open(encodedUri);
+                navigator.clipboard.writeText(csvContent);
             }
         }
         return scoutReport;
