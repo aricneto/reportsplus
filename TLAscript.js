@@ -10,7 +10,6 @@
 
 (function () {
     'use strict';
-    var scoutReport;
 
     $(document).ready(function() {
         //create a button
@@ -26,7 +25,7 @@
     });
 
     function parseScoutInfo() {
-        scoutReport = {
+        var scoutReport = {
             reportSubject: document.getElementById("reportSubject").innerText,
             reportDate: document.getElementById("reportDate").innerText,
             success: { 
@@ -47,20 +46,31 @@
                 iron: document.getElementById("spiedIronnum").innerText,
                 food: document.getElementById("spiedFoodnum").innerText
             }
-            buildings: {
+            // buildings: {
                 
-            }
+            // }
         }
-        alert(scoutReport.attacker.name);
+        //alert(scoutReport.attacker.name);
     }
+
+    var buildingNames = ["Forester's Hut","Cabin","Storehouse","Stone Mine","Sentinel Post","Hideaway","Farm Estate","Guardhouse","Ranger Post","Barracks","Iron Mine","Training Arena","Forum","Villa","Snag Barricade","Sawmill","Stable","Triari Post","Mason's Hut","Sorcerer's Tower","Equine Barricade","Grain Mill","Academy","Castle","Priestess Post","Rune Barricade","Temple","Smelter","Blacksmith","Ballista Post","Veiled Barricade","Port","Shipyard", "City Wall"];
 
     // Parse Scout building rebort
     function parseBuildings() {
-        var buildingNames = ["Forester's Hut","Cabin","Storehouse","Stone Mine","Sentinel Post","Hideaway","Farm Estate","Guardhouse","Ranger Post","Barracks","Iron Mine","Training Arena","Forum","Villa","Snag Barricade","Sawmill","Stable","Triari Post","Mason's Hut","Sorcerer's Tower","Equine Barricade","Grain Mill","Academy","Castle","Priestess Post","Rune Barricade","Temple","Smelter","Blacksmith","Ballista Post","Veiled Barricade","Port","Shipyard"];
+        let buildings = [];
     
-        var spyTable = document.getElementById("buildSpiedtable");
-        var spyBody = spyTable.getElementsByTagName("tbody");
-        var spied = [];
+        let spyTable = document.getElementById("buildSpiedtable").getElementsByTagName("tbody");
+        let spied = [];
+
+        for (let entry of spyTable) {
+            let tags = entry.getElementsByTagName("td");
+            if (tags.length == 2 && tags[1].id == "buildSpiedTotLev") {
+                var i = buildingNames.indexOf(tags[0].title);
+                if (i != undefined) {
+                    buildings[i] = tags[1].innerText;
+                }
+            }
+        }
 
         for (var i = 4; i < spyBody.length - 4; i += 3) {
             if (spyTd[i].title.length > 1) {
