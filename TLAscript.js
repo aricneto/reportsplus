@@ -85,10 +85,12 @@
             // },
             toStringParsing: function () { // unformatted string for easier parsing with excel sheets (single line)
                 var builds = [];
-                for (let i = 0; i < simpleBuildingNames.length; i++) {
+                for (let i = 0; i < buildingNames.length; i++) {
                     var building = this.buildings[i];
                     builds[i] = [building != undefined ? building : ""];
                 }
+
+                //TODO: use COTG API to gather player info (alliance, etc.)
                 
                 let csvContent = [
                     "START",
@@ -109,7 +111,7 @@
 
     var buildingNames = ["Forester\'s Hut","Cabin","Storehouse","Stone Mine","Sentinel Post","Hideaway","Farm Estate","Guard House","Ranger Post","Barracks","Iron Mine","Training Arena","Forum","Villa","Snag Barricade","Sawmill","Stable","Triari Post","Mason\'s Hut","Sorcerer\’s Tower","Equine Barricade","Grain Mill","Academy","Castle","Priestess Post","Rune Barricade","Temple","Smelter","Blacksmith","Ballista Post","Veiled Barricade","Port","Shipyard", "City Wall", "Basilica"];
 
-    var simpleBuildingNames = ["foresterHut", "cabin", "storehouse", "stoneMine", "sentinelPost", "hideaway", "farmEstate", "guardhouse", "rangerPost", "barracks", "ironMine", "trainingArena", "forum", "villa", "snagBarricade", "sawmill", "stable", "triariPost", "masonHut", "sorcererTower", "equineBarricade", "grainMill", "academy", "castle", "priestessPost", "runeBarricade", "temple", "smelter", "blacksmith", "ballistaPost", "veiledBarricade", "port", "shipyard"];
+    var simpleBuildingNames = ["foresterHut", "cabin", "storehouse", "stoneMine", "sentinelPost", "hideaway", "farmEstate", "guardhouse", "rangerPost", "barracks", "ironMine", "trainingArena", "forum", "villa", "snagBarricade", "sawmill", "stable", "triariPost", "masonHut", "sorcererTower", "equineBarricade", "grainMill", "academy", "castle", "priestessPost", "runeBarricade", "temple", "smelter", "blacksmith", "ballistaPost", "veiledBarricade", "port", "shipyard", "cityWall", "basilica"];
 
     // Parse Scout building rebort
     function parseBuildings() {
