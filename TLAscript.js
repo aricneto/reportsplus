@@ -4,7 +4,7 @@
 // @version      0.1
 // @description  Adds new features and calculations to CoTG scouting reports
 // @author       aricneto
-// @match        https://w*.crownofthegods.com/
+// @match        https://*.crownofthegods.com/
 // @grant        none
 // ==/UserScript==
 
@@ -20,7 +20,7 @@
         //make the button do something
         $('#aric_copyReport').off('click');
         $('#aric_copyReport').click(function () {
-            parseScoutInfo().toString();
+            parseScoutInfo().toStringParsing();
         });
     });
 
@@ -53,38 +53,55 @@
                 food: document.getElementById("spiedFoodnum").innerText.replace(/,/g, "")
             },
             buildings: parseBuildings(),
-            toString: function () {
+            // toStringFormatted: function () {
+                // var builds = [];
+                // for (let i = 0; i < simpleBuildingNames.length; i++) {
+                    // builds[i] = [simpleBuildingNames[i], this.buildings[i],"","",""]
+                // }
+                // let csvContent = "";
+                // 
+                // let rows = [
+                    // ["subject", this.reportSubject,"","",""],
+                    // ["date", this.reportDate,"","",""],
+                    // ["success", "units", "resources", "buildings", "fortifications"],
+                    // ["success", this.success.units, this.success.resources, this.success.buildings, this.success.fortifications],
+                    // ["attacker", this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords],
+                    // ["defender", this.defender.name, this.defender.city, this.defender.continent, this.defender.coords],
+                    // ["resources", "wood", "stone", "iron", "food"],
+                    // ["resources", this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food],
+                    // ["buildings", "total level","","",""]
+                // ];
+// 
+                // builds.forEach(function (building) {
+                    // rows.push(building);
+                // });
+// 
+                // rows.forEach(function(rowArray) {
+                    // let row = rowArray.join(",");
+                    // csvContent += row + "\r\n";
+                // });
+// 
+                // navigator.clipboard.writeText(csvContent);
+            // },
+            toStringParsing: function () { // unformatted string for easier parsing with excel sheets (single line)
                 var builds = [];
                 for (let i = 0; i < simpleBuildingNames.length; i++) {
-                    builds[i] = [simpleBuildingNames[i], this.buildings[i],"","",""]
+                    var building = this.buildings[i];
+                    builds[i] = [building != undefined ? building : ""];
                 }
-                let csvContent = "";//"data:text/csv;charset=utf-8,";
                 
-                let rows = [
-                    ["subject", this.reportSubject,"","",""],
-                    ["date", this.reportDate,"","",""],
-                    ["success", "units", "resources", "buildings", "fortifications"],
-                    ["success", this.success.units, this.success.resources, this.success.buildings, this.success.fortifications],
-                    ["attacker", this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords],
-                    ["defender", this.defender.name, this.defender.city, this.defender.continent, this.defender.coords],
-                    ["resources", "wood", "stone", "iron", "food"],
-                    ["resources", this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food],
-                    ["buildings", "total level","","",""]
+                let csvContent = [
+                    "START",
+                    this.reportDate,
+                    this.success.units, this.success.resources, this.success.buildings, this.success.fortifications,
+                    this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords,
+                    this.defender.name, this.defender.city, this.defender.continent, this.defender.coords,
+                    this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food,
+                    builds,
+                    "END"
                 ];
 
-                builds.forEach(function (building) {
-                    rows.push(building);
-                });
-
-                rows.forEach(function(rowArray) {
-                    let row = rowArray.join(",");
-                    csvContent += row + "\r\n";
-                });
-
-                //console.log(csvContent);
-                //var encodedUri = encodeURI(csvContent);
-                //window.open(encodedUri);
-                navigator.clipboard.writeText(csvContent);
+                navigator.clipboard.writeText(csvContent.join(","));
             }
         }
         return scoutReport;
