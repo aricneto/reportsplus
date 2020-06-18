@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         New Userscript
+// @name         aricneto's Report+
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
-// @author       You
-// @match        https://w20.crownofthegods.com/
+// @description  Adds new features and calculations to CoTG scouting reports
+// @author       aricneto
+// @match        https://w*.crownofthegods.com/
 // @grant        none
 // ==/UserScript==
 
