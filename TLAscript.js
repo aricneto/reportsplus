@@ -36,15 +36,21 @@
             },
             attacker: {
                 name: document.getElementById("reportattackerplayer").innerText,
-                city: document.getElementById("reportattackercity").innerText,
+                city: document.getElementById("reportattackercity").innerText.replace(/,/g, ""),
                 continent: document.getElementById("reportattackercont").innerText,
-                coords: document.getElementById("reportattackercoords").innerText,
+                coords: {
+                    x: document.getElementById("reportattackercoords").innerText.split(":")[0],
+                    y: document.getElementById("reportattackercoords").innerText.split(":")[1],
+                }
             },
             defender: {
                 name: document.getElementById("reportdefenderplayer").innerText,
-                city: document.getElementById("reportdefendercity").innerText,
+                city: document.getElementById("reportdefendercity").innerText.replace(/,/g, ""),
                 continent: document.getElementById("reportdefendercont").innerText,
-                coords: document.getElementById("reportdefendercoords").innerText,
+                coords: {
+                    x: document.getElementById("reportdefendercoords").innerText.split(":")[0],
+                    y: document.getElementById("reportdefendercoords").innerText.split(":")[1],
+                }
             },
             resources: {
                 wood: document.getElementById("spiedWoodnum").innerText.replace(/,/g, ""),
@@ -52,42 +58,32 @@
                 iron: document.getElementById("spiedIronnum").innerText.replace(/,/g, ""),
                 food: document.getElementById("spiedFoodnum").innerText.replace(/,/g, "")
             },
+            reportCode: document.getElementsByClassName("shRep")[0].getAttribute("data"),
             buildings: parseBuildings(),
-            // toStringFormatted: function () {
-                // var builds = [];
-                // for (let i = 0; i < simpleBuildingNames.length; i++) {
-                    // builds[i] = [simpleBuildingNames[i], this.buildings[i],"","",""]
-                // }
-                // let csvContent = "";
-                // 
-                // let rows = [
-                    // ["subject", this.reportSubject,"","",""],
-                    // ["date", this.reportDate,"","",""],
-                    // ["success", "units", "resources", "buildings", "fortifications"],
-                    // ["success", this.success.units, this.success.resources, this.success.buildings, this.success.fortifications],
-                    // ["attacker", this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords],
-                    // ["defender", this.defender.name, this.defender.city, this.defender.continent, this.defender.coords],
-                    // ["resources", "wood", "stone", "iron", "food"],
-                    // ["resources", this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food],
-                    // ["buildings", "total level","","",""]
-                // ];
-// 
-                // builds.forEach(function (building) {
-                    // rows.push(building);
-                // });
-// 
-                // rows.forEach(function(rowArray) {
-                    // let row = rowArray.join(",");
-                    // csvContent += row + "\r\n";
-                // });
-// 
-                // navigator.clipboard.writeText(csvContent);
-            // },
+            troops: parseTroops(),
             toStringParsing: function () { // unformatted string for easier parsing with excel sheets (single line)
                 var builds = [];
-                for (let i = 0; i < buildingNames.length; i++) {
-                    var building = this.buildings[i];
-                    builds[i] = [building != undefined ? building : ""];
+                if (this.buildings != undefined) {
+                    for (let i = 0; i < buildingNames.length; i++) {
+                        let building = this.buildings[i];
+                        builds[i] = [building != undefined ? building : ""];
+                    }
+                } else {
+                    for (let i = 0; i < buildingNames.length; i++) {
+                        builds[i] = "";
+                    }
+                }
+
+                var rtroops = [];
+                if (this.troops != undefined) {
+                    for (let i = 0; i < simpleTroopNames.length; i++) {
+                        let troop = this.troops[i];
+                        rtroops[i] = [troop != undefined ? troop : ""];
+                    }
+                } else {
+                    for (let i = 0; i < simpleTroopNames.length; i++) {
+                        rtroops[i] = "";
+                    }
                 }
 
                 //TODO: use COTG API to gather player info (alliance, etc.)
@@ -96,10 +92,12 @@
                     "START",
                     this.reportDate,
                     this.success.units, this.success.resources, this.success.buildings, this.success.fortifications,
-                    this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords,
-                    this.defender.name, this.defender.city, this.defender.continent, this.defender.coords,
+                    this.attacker.name, this.attacker.city, this.attacker.continent, this.attacker.coords.x, this.attacker.coords.y,
+                    this.defender.name, this.defender.city, this.defender.continent, this.defender.coords.x, this.defender.coords.y,
                     this.resources.wood, this.resources.stone, this.resources.iron, this.resources.food,
                     builds,
+                    rtroops,
+                    this.reportCode,
                     "END"
                 ];
 
@@ -117,12 +115,18 @@
     function parseBuildings() {
         let buildings = [];
     
-        let spyTable = document.getElementById("buildSpiedtable").getElementsByTagName("tbody");
+        let spyTable = document.getElementById("buildSpiedtable");
+        // check if buildings have been scouted
+        if (spyTable != undefined) {
+            spyTable = spyTable.getElementsByTagName("tbody");
+        } else {
+            return;
+        }
 
         for (let entry of spyTable) {
             let tags = entry.getElementsByTagName("td");
             if (tags.length == 2 && tags[1].id == "buildSpiedTotLev") {
-                var i = buildingNames.indexOf(tags[0].title);
+                let i = buildingNames.indexOf(tags[0].title);
                 if (i != undefined) {
                     buildings[i] = tags[1].innerText;
                 }
@@ -131,7 +135,36 @@
 
        return buildings;
     }
+    
 
+    var simpleTroops = ["guardtooltip", "vanqtooltip", "rangtooltip", "triatooltip", "scouttooltip", "arbtooltip", "horstooltip", "sorctooltip", "druitooltip", "legitooltip", "praetooltip", "senatooltip", "ramtooltip", "balltooltip", "scortooltip", "stintooltip", "galtooltip", "wstooltip"];
+
+    var simpleTroopNames = ["guard", "vanq", "rang", "tria", "scout", "arb", "hors", "sorc", "drui", "legi", "prae", "sena", "ram", "ball", "scor", "stin", "gal", "ws"];
+
+    function parseTroops() {
+        let troops = [];
+
+        let spyTable = document.getElementById("reportdefendTStable");
+        let survived = document.getElementsByClassName("repnumtrb");
+
+        if (spyTable != undefined && survived[3] != undefined) {
+            spyTable = spyTable.getElementsByClassName("repimgrow");
+            survived = survived[3].getElementsByClassName("repnumrow");
+        } else {
+            return;
+        }
+        
+        for (let i = 0; i < spyTable.length; i++){
+            let troop = spyTable[i].classList;
+            let numSurvived = survived[i].innerText;
+            if (troop.length == 2){
+                let i = simpleTroops.indexOf(troop[1]);
+                troops[i] = numSurvived.replace(/,/g, "");
+            }
+        }
+
+        return troops;
+    }
     
     // Turns array onto csv and writes it into clipboard
     function toCsv(infoArray) {
